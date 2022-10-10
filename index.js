@@ -10,9 +10,10 @@ canvasContext.fillRect(0,0, canvas.width, canvas.height); //filling the canvas s
 class Sprite
 {
     //defining properties that make up a sprite
-    constructor(position)
+    constructor(position, velocity)
     {
         this.position = position;
+        this.velocity = velocity
     }
 
     //defining how the sprite will look like
@@ -23,6 +24,16 @@ class Sprite
     }
 }
 
-const player = new Sprite({x:0, y:0}); //instantiating a player within the sprite class
+const player = new Sprite({x:0, y:0}); //instantiating a player of the sprite class
+const enemy = new Sprite({x:500, y:100}); //instantiating an enemy of the sprite class
 
-player.draw();
+player.draw(); //adding the player to the canvas
+enemy.draw(); //adding the enemy to the canvas
+
+//infinite loop to continously animate
+function animation()
+{
+    window.requestAnimationFrame(animation);
+}
+
+animation();
