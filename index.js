@@ -83,6 +83,13 @@ window.addEventListener('keydown', (event) =>
                 player.velocity.x = 1;
                 break;
         }
+
+        switch(event.key)
+        {
+            case 'a' :
+                player.velocity.x = -1;
+                break;
+        }
     }
 )
 
@@ -92,6 +99,13 @@ window.addEventListener('keyup', (event) =>
         switch(event.key)
         {
             case 'd' :
+                player.velocity.x = 0;
+                break;
+        }
+
+        switch(event.key)
+        {
+            case 'a' :
                 player.velocity.x = 0;
                 break;
         }
