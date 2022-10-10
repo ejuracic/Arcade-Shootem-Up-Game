@@ -10,7 +10,8 @@ canvasContext.fillRect(0,0, canvas.width, canvas.height); //filling the canvas s
 class Sprite
 {
     //defining properties that make up a sprite
-    constructor(position, velocity)
+    //position and velocity are wrapped together as one arguement so either one is needed but not required
+    constructor({position, velocity})
     {
         this.position = position;
         this.velocity = velocity
@@ -22,18 +23,77 @@ class Sprite
         canvasContext.fillStyle = 'red' //colouring the sprite
         canvasContext.fillRect(this.position.x, this.position.y, 50, 150); //setting the position of the sprite
     }
+
+    //this method moves the sprites
+    update()
+    {
+        this.draw();
+        this.position.x += this.velocity.x;
+    }
 }
 
-const player = new Sprite({x:0, y:0}); //instantiating a player of the sprite class
-const enemy = new Sprite({x:500, y:100}); //instantiating an enemy of the sprite class
+//instantiating a player of the sprite class
+const player = new Sprite(
+    {
+        position:
+        {
+            x:0, 
+            y:425
+        },
+        velocity:
+        {
+            x:0,
+            y:0
+        }
+    });
 
-player.draw(); //adding the player to the canvas
-enemy.draw(); //adding the enemy to the canvas
+//instantiating an enemy of the sprite class
+const enemy = new Sprite(
+    {
+        position:
+        {
+            x:500, 
+            y:0
+        },
+        velocity:
+        {
+            x:0,
+            y:0
+        }
+    }
+);
 
 //infinite loop to continously animate
 function animation()
 {
     window.requestAnimationFrame(animation);
+    canvasContext.fillStyle = 'black'
+    canvasContext.fillRect(0,0, canvas.width, canvas.height);
+    player.update(); //adding the player to the canvas
+    enemy.update(); //adding the enemy to the canvas
 }
 
 animation();
+
+window.addEventListener('keydown', (event) => 
+    {
+        switch(event.key)
+        {
+            case 'd' :
+                player.velocity.x = 1;
+                break;
+        }
+    }
+)
+
+
+window.addEventListener('keyup', (event) => 
+    {
+        switch(event.key)
+        {
+            case 'd' :
+                player.velocity.x = 0;
+                break;
+        }
+    }
+)
