@@ -63,6 +63,20 @@ const enemy = new Sprite(
     }
 );
 
+const keys =
+{
+    a:
+    {
+        pressed: false
+    },
+    d:
+    {
+        pressed: false
+    }
+}
+
+let lastKey
+
 //infinite loop to continously animate
 function animation()
 {
@@ -71,23 +85,38 @@ function animation()
     canvasContext.fillRect(0,0, canvas.width, canvas.height);
     player.update(); //adding the player to the canvas
     enemy.update(); //adding the enemy to the canvas
+
+    player.velocity.x = 0;
+    //these if statements enable the other key to go off if it was pressed second
+    if (keys.a.pressed && lastKey == 'a')
+    {
+        player.velocity.x = -1;
+    }
+    else if (keys.d.pressed && lastKey == 'd')
+    {
+        player.velocity.x = -1;
+    }
 }
 
 animation();
 
 window.addEventListener('keydown', (event) => 
     {
+        //move to the right when pressing the character 'd'
         switch(event.key)
         {
             case 'd' :
-                player.velocity.x = 1;
+                keys.d.pressed = true;
+                lastKey = 'd';
                 break;
         }
 
+        //move to the left when pressing the character 'a'
         switch(event.key)
         {
             case 'a' :
-                player.velocity.x = -1;
+                keys.a.pressed = true;
+                lastKey = 'a';
                 break;
         }
     }
@@ -96,17 +125,20 @@ window.addEventListener('keydown', (event) =>
 
 window.addEventListener('keyup', (event) => 
     {
+        
+        //stop moving to the right when not pressing the character 'd'
         switch(event.key)
         {
             case 'd' :
-                player.velocity.x = 0;
+                keys.d.pressed = false;
                 break;
         }
 
+        //stop moving to the left when not pressing the character 'a'
         switch(event.key)
         {
             case 'a' :
-                player.velocity.x = 0;
+                keys.a.pressed = false;
                 break;
         }
     }
