@@ -94,7 +94,7 @@ function animation()
     }
     else if (keys.d.pressed && lastKey == 'd')
     {
-        player.velocity.x = -1;
+        player.velocity.x = 1;
     }
 }
 
