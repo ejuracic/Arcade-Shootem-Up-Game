@@ -61,8 +61,55 @@ class Sprite
         {
             enemy.position.x -= enemy.velocity.x;
         }
+
+        if (enemy.position.y == bullet.position.y)
+        {
+        }
     }
 }
+
+class Bullet
+{
+    //defining properties that make up a bullet
+    //position and velocity are wrapped together as one arguement so either one is needed but not required
+    constructor({position, velocity})
+    {
+        this.position = position;
+        this.velocity = velocity
+    }
+
+    //defining how the sprite will look like
+    draw()
+    {
+        canvasContext.fillStyle = 'green' //colouring the bullet
+        canvasContext.fillRect(this.position.x, this.position.y, 10, 10); //setting the position of the bullet
+    }
+
+    update()
+    {
+        this.draw();
+
+        if (keys.w.pressed)
+        {
+            bullet.position.y += bullet.velocity.y;
+        }
+        
+    }
+}
+
+const bullet = new Bullet(
+    {
+        position:
+        {
+            x:10, 
+            y:475
+        },
+        velocity:
+        {
+            x:0,
+            y:0
+        }
+    });
 
 //instantiating a player of the sprite class
 const player = new Sprite(
@@ -104,6 +151,10 @@ const keys =
     d:
     {
         pressed: false
+    },
+    w:
+    {
+        pressed: false
     }
 }
 
@@ -117,14 +168,18 @@ function animation()
     canvasContext.fillRect(0,0, canvas.width, canvas.height);
     player.update(); //adding the player to the canvas
     enemy.update(); //adding the enemy to the canvas
+    bullet.update();
     
     player.velocity.x = 0;
+    bullet.position.x = player.position.x;
+    bullet.velocity.y = -10;
 
-    if (enemy.position.x <= 0)
+    //the following if statements enable movement for the enemy
+    if (enemy.position.x <= 0)  //if equal or below 0 then sets the velocity to 5
     {
         enemy.velocity.x = 5;
     }
-    if (enemy.position.x == 950)
+    if (enemy.position.x == 965)    //if equal to 
     {
         enemy.velocity.x = -5;
     }
@@ -137,6 +192,13 @@ function animation()
     else if (keys.d.pressed && lastKey == 'd')
     {
         player.velocity.x = 5;
+    }
+
+    if(bullet.position.y < 0)
+    {
+        bullet.position.y = 475;
+        bullet.position.x = 10;
+        keys.w.pressed = false;
     }
 }
 
@@ -159,6 +221,13 @@ window.addEventListener('keydown', (event) =>
             case 'a' :
                 keys.a.pressed = true;
                 lastKey = 'a';
+                break;
+        }
+
+        switch(event.key)
+        {
+            case 'w':
+                keys.w.pressed = true;
                 break;
         }
     }
