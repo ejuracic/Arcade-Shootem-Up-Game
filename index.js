@@ -45,6 +45,22 @@ class Sprite
         {
             this.position.x -= this.velocity.x;
         }
+
+
+        if (enemy.position.x >= 0 && enemy.position.x <= canvas.width - 50)
+        {
+            enemy.position.x += enemy.velocity.x;
+        }
+        //this if statement states that if it is less than or equal to 0 then set the position to 0 to avoid out of the canvas on the left
+        if (enemy.position.x <= 0)
+        {
+            enemy.position.x += enemy.velocity.x;
+        }
+        //this if statement ensures that the player doesnt go out of the canvas on the right
+        if (enemy.position.x >= 950)
+        {
+            enemy.position.x -= enemy.velocity.x;
+        }
     }
 }
 
@@ -68,7 +84,7 @@ const enemy = new Sprite(
     {
         position:
         {
-            x:500, 
+            x:0, 
             y:0
         },
         velocity:
@@ -101,8 +117,18 @@ function animation()
     canvasContext.fillRect(0,0, canvas.width, canvas.height);
     player.update(); //adding the player to the canvas
     enemy.update(); //adding the enemy to the canvas
-
+    
     player.velocity.x = 0;
+
+    if (enemy.position.x <= 0)
+    {
+        enemy.velocity.x = 5;
+    }
+    if (enemy.position.x == 950)
+    {
+        enemy.velocity.x = -5;
+    }
+
     //these if statements enable the other key to go off if it was pressed second
     if (keys.a.pressed && lastKey == 'a')
     {
