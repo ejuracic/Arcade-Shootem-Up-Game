@@ -28,7 +28,23 @@ class Sprite
     update()
     {
         this.draw();
-        this.position.x += this.velocity.x;
+        
+        //this if statement checks the boundaries of the canvas width. If the player is greater or equal to 0 AND less than or equal to 
+        //974 then the player can move to the right
+        if (this.position.x >= 0 && this.position.x <= canvas.width - 50)
+        {
+            this.position.x += this.velocity.x;
+        }
+        //this if statement states that if it is less than or equal to 0 then set the position to 0 to avoid out of the canvas on the left
+        if (this.position.x <= 0)
+        {
+            this.position.x = this.velocity.x;
+        }
+        //this if statement ensures that the player doesnt go out of the canvas on the right
+        if (this.position.x > canvas.width - 50)
+        {
+            this.position.x -= this.velocity.x;
+        }
     }
 }
 
@@ -90,11 +106,11 @@ function animation()
     //these if statements enable the other key to go off if it was pressed second
     if (keys.a.pressed && lastKey == 'a')
     {
-        player.velocity.x = -1;
+        player.velocity.x = -5;
     }
     else if (keys.d.pressed && lastKey == 'd')
     {
-        player.velocity.x = 1;
+        player.velocity.x = 5;
     }
 }
 
