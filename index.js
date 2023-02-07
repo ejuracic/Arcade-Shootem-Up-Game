@@ -168,11 +168,8 @@ function animation()
     canvasContext.fillRect(0,0, canvas.width, canvas.height);
     player.update(); //adding the player to the canvas
     enemy.update(); //adding the enemy to the canvas
-    bullet.update();
     
     player.velocity.x = 0;
-    bullet.position.x = player.position.x;
-    bullet.velocity.y = -10;
 
     //the following if statements enable movement for the enemy
     if (enemy.position.x <= 0)  //if equal or below 0 then sets the velocity to 5
@@ -192,6 +189,13 @@ function animation()
     else if (keys.d.pressed && lastKey == 'd')
     {
         player.velocity.x = 5;
+    }
+
+    if (keys.w.pressed)
+    {
+        bullet.update();
+        bullet.position.x = player.position.x;
+        bullet.velocity.y = -10;
     }
 
     if(bullet.position.y < 0)
