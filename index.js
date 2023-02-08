@@ -6,22 +6,25 @@ canvas.height = 576; //height of the canvas is gonna be 576 pixels
 
 canvasContext.fillRect(0,0, canvas.width, canvas.height); //filling the canvas so we can see it appear on the website
 
+var record = 0;
 //class to contain elements and variables that make up a "sprite"
 class Sprite
 {
     //defining properties that make up a sprite
     //position and velocity are wrapped together as one arguement so either one is needed but not required
-    constructor({position, velocity})
+    constructor({position, velocity}, width, height)
     {
         this.position = position;
         this.velocity = velocity
+        this.width = 50;
+        this.height = 150;
     }
 
     //defining how the sprite will look like
     draw()
     {
         canvasContext.fillStyle = 'red' //colouring the sprite
-        canvasContext.fillRect(this.position.x, this.position.y, 50, 150); //setting the position of the sprite
+        canvasContext.fillRect(this.position.x, this.position.y, this.width, this.height); //setting the position of the sprite
     }
 
     //this method moves the sprites
@@ -62,8 +65,10 @@ class Sprite
             enemy.position.x -= enemy.velocity.x;
         }
 
-        if (enemy.position.y == bullet.position.y)
+        if(bullet.position.y == enemy.position.y || bullet.position.x == enemy.position.x)
         {
+            Destroy(enemy);
+            record += 1;
         }
     }
 }
@@ -72,17 +77,19 @@ class Bullet
 {
     //defining properties that make up a bullet
     //position and velocity are wrapped together as one arguement so either one is needed but not required
-    constructor({position, velocity})
+    constructor({position, velocity}, width, height)
     {
         this.position = position;
         this.velocity = velocity
+        this.width = 10;
+        this.height = 10;
     }
 
     //defining how the sprite will look like
     draw()
     {
         canvasContext.fillStyle = 'green' //colouring the bullet
-        canvasContext.fillRect(this.position.x, this.position.y, 10, 10); //setting the position of the bullet
+        canvasContext.fillRect(this.position.x, this.position.y, this.width, this.height); //setting the position of the bullet
     }
 
     update()
@@ -166,9 +173,10 @@ function animation()
     window.requestAnimationFrame(animation);
     canvasContext.fillStyle = 'black'
     canvasContext.fillRect(0,0, canvas.width, canvas.height);
+
     player.update(); //adding the player to the canvas
     enemy.update(); //adding the enemy to the canvas
-    
+
     player.velocity.x = 0;
 
     //the following if statements enable movement for the enemy
@@ -191,10 +199,12 @@ function animation()
         player.velocity.x = 5;
     }
 
+    //this if statement enables the bullet to be created upon a w press
+    //As well to be shot out by the player
     if (keys.w.pressed)
     {
-        bullet.update();
         bullet.position.x = player.position.x;
+        bullet.update();
         bullet.velocity.y = -10;
     }
 
@@ -204,6 +214,16 @@ function animation()
         bullet.position.x = 10;
         keys.w.pressed = false;
     }
+
+    if(bullet.position.y == enemy.position.y || bullet.position.x == enemy.position.x)
+    {
+        record += 1;
+    }
+
+    canvasContext.font = "bold 96px Helvetica, Arial, sans-serif";
+
+    canvasContext.fillStyle = "steelblue";
+    canvasContext.fillText(record, 40, 125);
 }
 
 animation();
