@@ -1,12 +1,25 @@
 const canvas = document.querySelector('canvas'); //getting a const variable to be assigned to canvas for resizing
 const canvasContext = canvas.getContext('2d'); //making the canvas know that this is gonna be a 2D game
 
-canvas.width = 1024; //width of the canvas is gonna be 1024 pixels
-canvas.height = 576; //height of the canvas is gonna be 576 pixels
+//const declarations to avoid use of magic numbers
+const canvasWidth = 1024;
+const canvasHeight = 576;
+
+const boundary = 50;
+
+const playerMaxBoundary = 950;
+const enemyMaxBoundary = 965;
+
+const fillTextOne = 40;
+const fillTextTwo = 125;
+
+canvas.width = canvasWidth; //width of the canvas is gonna be 1024 pixels
+canvas.height = canvasHeight; //height of the canvas is gonna be 576 pixels
 
 canvasContext.fillRect(0,0, canvas.width, canvas.height); //filling the canvas so we can see it appear on the website
 
-var record = 0;
+var record = "Hit!";        //what to display upon bulelt colliding with enemy
+
 //class to contain elements and variables that make up a "sprite"
 class Sprite
 {
@@ -16,8 +29,8 @@ class Sprite
     {
         this.position = position;
         this.velocity = velocity
-        this.width = 50;
-        this.height = 150;
+        this.width = width;
+        this.height = height
     }
 
     //defining how the sprite will look like
@@ -31,10 +44,23 @@ class Sprite
     update()
     {
         this.draw();
+
+        //enemy hitbox
+        var leftEnemyX = enemy.position.x;
+        var rightEnemyX = enemy.position.x + enemy.height;
+        var upperEnemyY = enemy.position.y;
+        var bottomEnemyY = enemy.position.y + enemy.height;
+        
+        //bullet hitbox
+        var leftBulletX = bullet.position.x;
+        var rightBulletX = bullet.position.x + bullet.height;
+        var upperBulletY = bullet.position.y;
+        var bottomBulletY = bullet.position.y + bullet.height;
+        
         
         //this if statement checks the boundaries of the canvas width. If the player is greater or equal to 0 AND less than or equal to 
         //974 then the player can move to the right
-        if (this.position.x >= 0 && this.position.x <= canvas.width - 50)
+        if (this.position.x >= 0 && this.position.x <= canvas.width - boundary)
         {
             this.position.x += this.velocity.x;
         }
@@ -50,7 +76,7 @@ class Sprite
         }
 
 
-        if (enemy.position.x >= 0 && enemy.position.x <= canvas.width - 50)
+        if (enemy.position.x >= 0 && enemy.position.x <= canvas.width - boundary)
         {
             enemy.position.x += enemy.velocity.x;
         }
@@ -60,15 +86,14 @@ class Sprite
             enemy.position.x += enemy.velocity.x;
         }
         //this if statement ensures that the player doesnt go out of the canvas on the right
-        if (enemy.position.x >= 950)
+        if (enemy.position.x >= playerMaxBoundary)
         {
             enemy.position.x -= enemy.velocity.x;
         }
 
-        if(bullet.position.y == enemy.position.y || bullet.position.x == enemy.position.x)
+        if(bottomEnemyY >= upperBulletY && upperEnemyY <= bottomBulletY && leftEnemyX <= rightBulletX && rightEnemyX >= leftBulletX)
         {
-            Destroy(enemy);
-            record += 1;
+            bullet.hit = true;
         }
     }
 }
@@ -77,27 +102,33 @@ class Bullet
 {
     //defining properties that make up a bullet
     //position and velocity are wrapped together as one arguement so either one is needed but not required
-    constructor({position, velocity}, width, height)
+    constructor({position, velocity}, width, height, hit)
     {
         this.position = position;
         this.velocity = velocity
-        this.width = 10;
-        this.height = 10;
+        this.width = width;
+        this.height = height
+        this.hit = hit;
     }
 
     //defining how the sprite will look like
     draw()
     {
         canvasContext.fillStyle = 'green' //colouring the bullet
-        canvasContext.fillRect(this.position.x, this.position.y, this.width, this.height); //setting the position of the bullet
+        canvasContext.fillRect(this.position.x, this.position.y, this.width, this.height, this.hit); //setting the position of the bullet
     }
 
     update()
     {
-        this.draw();
+        
+        if(!bullet.hit)
+        {
+            this.draw();
+        }
 
         if (keys.w.pressed)
         {
+            bullet.hit = false;
             bullet.position.y += bullet.velocity.y;
         }
         
@@ -116,7 +147,11 @@ const bullet = new Bullet(
             x:0,
             y:0
         }
-    });
+    },         
+    width = 10,
+    height = 10,
+    hit = false
+);
 
 //instantiating a player of the sprite class
 const player = new Sprite(
@@ -130,8 +165,12 @@ const player = new Sprite(
         {
             x:0,
             y:0
-        }
-    });
+        },
+    },
+    width = 50,
+    height = 150
+    
+);
 
 //instantiating an enemy of the sprite class
 const enemy = new Sprite(
@@ -145,8 +184,13 @@ const enemy = new Sprite(
         {
             x:0,
             y:0
-        }
-    }
+        },
+        width: 50,
+        height: 150
+    },
+    width = 50,
+    height = 150
+    
 );
 
 const keys =
@@ -177,6 +221,16 @@ function animation()
     player.update(); //adding the player to the canvas
     enemy.update(); //adding the enemy to the canvas
 
+    var leftEnemyX = enemy.position.x;
+    var rightEnemyX = enemy.position.x + enemy.height;
+    var upperEnemyY = enemy.position.y;
+    var bottomEnemyY = enemy.position.y + enemy.height;
+
+    var leftBulletX = bullet.position.x;
+    var rightBulletX = bullet.position.x + bullet.height;
+    var upperBulletY = bullet.position.y;
+    var bottomBulletY = bullet.position.y + bullet.height;
+
     player.velocity.x = 0;
 
     //the following if statements enable movement for the enemy
@@ -184,7 +238,7 @@ function animation()
     {
         enemy.velocity.x = 5;
     }
-    if (enemy.position.x == 965)    //if equal to 
+    if (enemy.position.x == enemyMaxBoundary)    //if equal to max boundary to hit edge and bounce to other direction
     {
         enemy.velocity.x = -5;
     }
@@ -215,15 +269,18 @@ function animation()
         keys.w.pressed = false;
     }
 
-    if(bullet.position.y == enemy.position.y || bullet.position.x == enemy.position.x)
+    if(bottomEnemyY >= upperBulletY && upperEnemyY <= bottomBulletY && leftEnemyX <= rightBulletX && rightEnemyX >= leftBulletX)
     {
-        record += 1;
+        canvasContext.font = "bold 96px Helvetica, Arial, sans-serif";
+
+        canvasContext.fillStyle = "steelblue";
+        canvasContext.fillText(record, fillTextOne, fillTextTwo);
     }
 
     canvasContext.font = "bold 96px Helvetica, Arial, sans-serif";
 
     canvasContext.fillStyle = "steelblue";
-    canvasContext.fillText(record, 40, 125);
+    canvasContext.fillText("", fillTextOne, fillTextTwo);
 }
 
 animation();
